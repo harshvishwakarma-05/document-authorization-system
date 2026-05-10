@@ -1,0 +1,72 @@
+{% extends "documents/base.html" %}
+
+{% block title %}Verified Certificate | DocuChain Django{% endblock %}
+
+{% block content %}
+<section class="workspace-grid">
+  <div class="tool-panel">
+    <div class="panel-heading">
+      <h2>Verified Certificate</h2>
+      <p>This QR page confirms that the document was saved as an original record.</p>
+    </div>
+
+    <div class="certificate-list">
+      <p><strong>Status:</strong> {% if ledger_valid %}Original document record found{% else %}Verification problem detected{% endif %}</p>
+      <p><strong>Document title:</strong> {{ document.title }}</p>
+      <p><strong>Owner:</strong> {{ document.owner }}</p>
+      <p><strong>File name:</strong> {{ document.file_name }}</p>
+      <p><strong>Uploaded by:</strong> {{ document.uploaded_by.username }}</p>
+      <p><strong>Registered on:</strong> {{ document.created_at|date:"M d, Y H:i" }}</p>
+      <p><strong>Block number:</strong> #{{ document.ledger_block.index }}</p>
+    </div>
+
+    <details class="technical-details open-details" open>
+      <summary>Technical verification details</summary>
+      <code>Document hash: {{ document.document_hash }}</code>
+      <code>Previous block: {{ document.ledger_block.previous_hash }}</code>
+      <code>Block hash: {{ document.ledger_block.block_hash }}</code>
+    </details>
+
+    {% if document.document_file %}
+      <p class="helper-text">
+        <a class="button-link" href="{% url 'open_certificate_document' document.verification_token %}" target="_blank" rel="noopener">Open Original Document</a>
+      </p>
+      <p class="helper-text">
+        <a class="button-link secondary" href="{% url 'download_certificate_document' document.verification_token %}">Download Original Document</a>
+      </p>
+    {% endif %}
+  </div>
+
+  <aside class="result-panel">
+    <div class="panel-heading">
+      <h2>QR Codes</h2>
+      <p>Use the certificate QR for proof, or the file QR to open the uploaded document.</p>
+    </div>
+
+    {% if qr_code %}
+      <h3 class="qr-title">Certificate QR</h3>
+      <img class="qr-code" src="{{ qr_code }}" alt="QR code for verified document">
+    {% else %}
+      <div class="result-card neutral">
+        <span class="result-badge">QR setup</span>
+        <h3>QR package not installed</h3>
+        <p>Install qrcode using requirements.txt to display the QR image.</p>
+      </div>
+    {% endif %}
+
+    <div class="hash-box">
+      <span>Certificate URL</span>
+      <code>{{ certificate_url }}</code>
+    </div>
+
+    {% if file_qr_code %}
+      <h3 class="qr-title">Download File QR</h3>
+      <img class="qr-code" src="{{ file_qr_code }}" alt="QR code to download uploaded original document">
+      <div class="hash-box">
+        <span>Download file URL</span>
+        <code>{{ file_url }}</code>
+      </div>
+    {% endif %}
+  </aside>
+</section>
+{% endblock %}

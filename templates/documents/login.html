@@ -1,0 +1,36 @@
+{% extends "documents/base.html" %}
+
+{% block title %}Login | DocuChain Django{% endblock %}
+
+{% block content %}
+<section class="login-section">
+  <form method="post" class="tool-panel login-panel">
+    {% csrf_token %}
+    <div class="panel-heading">
+      <h2>User Login</h2>
+      <p>Sign in to access document registration and verification.</p>
+    </div>
+
+    {% if form.errors %}
+      <p class="form-message">Invalid username or password.</p>
+    {% endif %}
+
+    <label class="field">
+      <span>Username</span>
+      {{ form.username }}
+    </label>
+
+   <label class="field">
+  <span>Password</span>
+  <div class="password-control">
+    {{ form.password }}
+    <button type="button" class="toggle-password" data-target="id_password">Show</button>
+  </div>
+</label>
+
+<button type="submit">Login</button>
+<p class="helper-text">Forgot password? <a href="{% url 'forgot_password' %}">Reset it</a></p>
+<p class="helper-text">New user? <a href="{% url 'signup' %}">Create an account</a></p>
+
+</section>
+{% endblock %}

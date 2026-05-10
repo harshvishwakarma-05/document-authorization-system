@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Document Authorization System{% endblock %}</title>
+
+  <link rel="stylesheet" href="{% static 'documents/style.css' %}">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Document Portal</p>
+       <h1>Document Authorization System</h1>
+
+        <p class="hero-copy">
+          Upload, verify, and share document records from one simple place.
+        </p>
+      </div>
+      <div class="status-panel">
+        <span class="status-dot"></span>
+        <strong>Account active</strong>
+        <small>Your saved documents are ready to manage.</small>
+      </div>
+    </section>
+
+    {% if user.is_authenticated %}
+      <nav class="session-bar">
+        <span>Logged in as <strong>{{ user.username }}</strong></span>
+        <div class="nav-actions">
+          <a href="{% url 'dashboard' %}">Home</a>
+          <a href="{% url 'register_document' %}">Save Original</a>
+          <a href="{% url 'verify_document' %}">Check File</a>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="secondary compact">Logout</button>
+          </form>
+        </div>
+      </nav>
+    {% endif %}
+
+    {% if messages %}
+      <section class="messages">
+        {% for message in messages %}
+          <p class="message {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+      </section>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+<script>
+  document.querySelectorAll(".toggle-password").forEach((button) => {
+    button.addEventListener("click", () => {
+      const input = document.getElementById(button.dataset.target);
+      if (!input) return;
+
+      const isHidden = input.type === "password";
+      input.type = isHidden ? "text" : "password";
+      button.textContent = isHidden ? "Hide" : "Show";
+    });
+  });
+</script>
+
+</html>

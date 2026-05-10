@@ -1,0 +1,31 @@
+{% extends "documents/base.html" %}
+
+{% block title %}Delete Document | DocuChain Django{% endblock %}
+
+{% block content %}
+<section class="workspace-grid single">
+  <form method="post" class="tool-panel">
+    {% csrf_token %}
+    <div class="panel-heading">
+      <h2>Delete Document</h2>
+      <p>This will remove the saved document and its QR certificate.</p>
+    </div>
+
+    <div class="result-card danger">
+      <span class="result-badge">Delete</span>
+      <h3>{{ document.title }}</h3>
+      <p>Are you sure you want to delete this document?</p>
+    </div>
+
+    <div class="hash-box">
+      <span>Document hash</span>
+      <code>{{ document.document_hash }}</code>
+    </div>
+
+    <div class="button-row">
+      <button type="submit" class="danger-button">Delete Document</button>
+      <a class="button-link secondary" href="{% url 'dashboard' %}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

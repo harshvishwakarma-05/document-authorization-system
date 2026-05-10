@@ -1,0 +1,37 @@
+{% extends "documents/base.html" %}
+
+{% block title %}Edit Document | DocuChain Django{% endblock %}
+
+{% block content %}
+<section class="workspace-grid single">
+  <form method="post" class="tool-panel">
+    {% csrf_token %}
+    <div class="panel-heading">
+      <h2>Edit Document</h2>
+      <p>Update the owner or title. The original file stays the same.</p>
+    </div>
+
+    <label class="field">
+      <span>Document owner</span>
+      {{ form.owner }}
+      {{ form.owner.errors }}
+    </label>
+
+    <label class="field">
+      <span>Document title</span>
+      {{ form.title }}
+      {{ form.title.errors }}
+    </label>
+
+    <div class="hash-box">
+      <span>Document hash</span>
+      <code>{{ document.document_hash }}</code>
+    </div>
+
+    <div class="button-row">
+      <button type="submit">Save Changes</button>
+      <a class="button-link secondary" href="{% url 'dashboard' %}">Cancel</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

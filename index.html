@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuChain Authenticator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Web 3.0 Mini Project</p>
+        <h1>Decentralized Document Authentication System</h1>
+        <p class="hero-copy">
+          Register a document fingerprint, verify it later, and inspect a tamper-evident ledger
+          that demonstrates how blockchain-based authentication protects file integrity.
+        </p>
+      </div>
+      <div class="status-panel" aria-label="System status">
+        <span class="status-dot"></span>
+        <strong>Python-secured demo</strong>
+        <small>Login, logout, and verification run through a Python backend.</small>
+      </div>
+    </section>
+
+    <section class="login-section" id="loginView">
+      <form class="tool-panel login-panel" id="loginForm">
+        <div class="panel-heading">
+          <h2>User Login</h2>
+          <p>Use the demo credentials to access document registration and verification.</p>
+        </div>
+
+        <label class="field">
+          <span>Username</span>
+          <input id="username" type="text" value="admin" autocomplete="username" required>
+        </label>
+
+        <label class="field">
+          <span>Password</span>
+          <input id="password" type="password" value="admin123" autocomplete="current-password" required>
+        </label>
+
+        <button type="submit">Login</button>
+        <p class="form-message" id="loginMessage"></p>
+      </form>
+    </section>
+
+    <section id="appView" hidden>
+      <div class="session-bar">
+        <span>Logged in as <strong id="currentUser"></strong></span>
+        <button type="button" id="logoutBtn" class="secondary compact">Logout</button>
+      </div>
+
+      <section class="workspace-grid">
+        <form class="tool-panel" id="documentForm">
+        <div class="panel-heading">
+          <h2>Register / Verify</h2>
+          <p>Upload the same file later to prove whether it is authentic.</p>
+        </div>
+
+        <label class="field">
+          <span>Document owner</span>
+          <input id="ownerName" type="text" placeholder="Example: College Office" required>
+        </label>
+
+        <label class="field">
+          <span>Document title</span>
+          <input id="documentTitle" type="text" placeholder="Example: Degree Certificate" required>
+        </label>
+
+        <label class="file-drop">
+          <input id="documentFile" type="file" required>
+          <span class="file-icon">+</span>
+          <strong id="fileLabel">Choose a document</strong>
+          <small>PDF, image, text, or any file type</small>
+        </label>
+
+        <div class="button-row">
+          <button type="button" id="registerBtn">Register</button>
+          <button type="button" id="verifyBtn" class="secondary">Verify</button>
+        </div>
+        </form>
+
+        <aside class="result-panel" aria-live="polite">
+        <div class="panel-heading">
+          <h2>Verification Result</h2>
+          <p>Document fingerprints are matched against the ledger.</p>
+        </div>
+        <div id="resultCard" class="result-card neutral">
+          <span class="result-badge">Ready</span>
+          <h3>Upload a file to begin</h3>
+          <p>The system will calculate a SHA-256 hash and compare it with registered records.</p>
+        </div>
+        <div class="hash-box">
+          <span>Current document hash</span>
+          <code id="hashOutput">Not calculated yet</code>
+        </div>
+        </aside>
+      </section>
