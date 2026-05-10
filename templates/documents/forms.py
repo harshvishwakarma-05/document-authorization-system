@@ -1,3 +1,14 @@
+class DocumentEditForm(forms.ModelForm):
+    class Meta:
+        model = DocumentRecord
+        fields = ["owner", "title"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["owner"].widget.attrs.update({"placeholder": "Example: College Office"})
+        self.fields["title"].widget.attrs.update({"placeholder": "Example: Degree Certificate"})
+
+
 class ForgotPasswordForm(forms.Form):
     username = forms.CharField(max_length=150)
     email = forms.EmailField()
@@ -13,3 +24,7 @@ class ForgotPasswordForm(forms.Form):
             raise forms.ValidationError("New password and confirm password do not match.")
 
         return cleaned_data
+
+
+def validate_safe_document(uploaded_file):
+    ...
