@@ -5,8 +5,11 @@ from . import views
 
 
 urlpatterns = [
+<<<<<<< HEAD
 path("forgot-password/", views.forgot_password_view, name="forgot_password"),
 
+=======
+>>>>>>> dc6517ec272cf5ca0aee63c8db5b7412ca1fa5a0
     path("", views.dashboard_view, name="dashboard"),
     path("signup/", views.signup_view, name="signup"),
     path("login/", auth_views.LoginView.as_view(template_name="documents/login.html"), name="login"),
@@ -20,4 +23,7 @@ path("forgot-password/", views.forgot_password_view, name="forgot_password"),
     path("certificate/<str:token>/document/", views.open_certificate_document_view, name="open_certificate_document"),
     path("certificate/<str:token>/download/", views.download_certificate_document_view, name="download_certificate_document"),
 ]
+<<<<<<< HEAD
 
+=======
+>>>>>>> dc6517ec272cf5ca0aee63c8db5b7412ca1fa5a0

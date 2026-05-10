@@ -20,6 +20,7 @@
       {{ form.username }}
     </label>
 
+<<<<<<< HEAD
    <label class="field">
   <span>Password</span>
   <div class="password-control">
@@ -32,5 +33,15 @@
 <p class="helper-text">Forgot password? <a href="{% url 'forgot_password' %}">Reset it</a></p>
 <p class="helper-text">New user? <a href="{% url 'signup' %}">Create an account</a></p>
 
+=======
+    <label class="field">
+      <span>Password</span>
+      {{ form.password }}
+    </label>
+
+    <button type="submit">Login</button>
+    <p class="helper-text">New user? <a href="{% url 'signup' %}">Create an account</a></p>
+  </form>
+>>>>>>> dc6517ec272cf5ca0aee63c8db5b7412ca1fa5a0
 </section>
 {% endblock %}
