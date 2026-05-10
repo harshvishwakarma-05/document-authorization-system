@@ -1,0 +1,44 @@
+{% extends "documents/base.html" %}
+
+{% block title %}Sign Up | DocuChain Django{% endblock %}
+
+{% block content %}
+<section class="login-section">
+  <form method="post" class="tool-panel login-panel">
+    {% csrf_token %}
+    <div class="panel-heading">
+      <h2>Create User</h2>
+      <p>User data is stored in Django's SQLite authentication database.</p>
+    </div>
+
+    {{ form.non_field_errors }}
+
+    <label class="field">
+      <span>Username</span>
+      {{ form.username }}
+      {{ form.username.errors }}
+    </label>
+
+    <label class="field">
+      <span>Email</span>
+      {{ form.email }}
+      {{ form.email.errors }}
+    </label>
+
+    <label class="field">
+      <span>Password</span>
+      {{ form.password1 }}
+      {{ form.password1.errors }}
+    </label>
+
+    <label class="field">
+      <span>Confirm password</span>
+      {{ form.password2 }}
+      {{ form.password2.errors }}
+    </label>
+
+    <button type="submit">Create Account</button>
+    <p class="helper-text">Already registered? <a href="{% url 'login' %}">Login</a></p>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends "documents/base.html" %}
+
+{% block title %}Dashboard | DocuChain Django{% endblock %}
+
+{% block content %}
+<section class="action-strip">
+  <a class="primary-action" href="{% url 'register_document' %}">
+    <span>Save Original</span>
+    <small>Add a real document and create a QR certificate.</small>
+  </a>
+  <a class="primary-action secondary-action" href="{% url 'verify_document' %}">
+    <span>Check File</span>
+    <small>Upload a file to detect original or fake.</small>
+  </a>
+</section>
+
+{% if site_base_url %}
+  <section class="security-notice success-notice">
+    <strong>Public link active</strong>
+    <span>QR codes use {{ site_base_url }} and can be opened on other devices while the server is running.</span>
+  </section>
+{% else %}
+  <section class="security-notice warning-notice">
+    <strong>Public link not set</strong>
+    <span>QR codes may work only on this laptop. Set SITE_BASE_URL for mobile and other laptops.</span>
+  </section>
+{% endif %}
+
+<section class="workspace-grid">
+  <div class="tool-panel">
+    <div class="panel-heading">
+      <h2>How it works</h2>
+      <p>A simple process for students, offices, and certificate verification.</p>
+    </div>
+    <div class="step-list">
+      <div class="step-item">
+        <span>1</span>
+        <div>
+          <strong>Save the original</strong>
+          <p>Upload the real document one time.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span>2</span>
+        <div>
+          <strong>Share the QR</strong>
+          <p>The QR opens a verified certificate page.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <span>3</span>
+        <div>
+          <strong>Check any copy</strong>
+          <p>If the file was changed, the app marks it fake.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-panel">
+    <div class="panel-heading">
+      <h2>Saved summary</h2>
+      <p>Your database currently contains:</p>
+    </div>
+    <div class="metric-grid">
+      <div class="metric">
+        <span>Documents</span>
+        <strong>{{ document_count }}</strong>
+      </div>
+      <div class="metric">
+        <span>QR Certificates</span>
+        <strong>On</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ledger-section">
+  <div class="panel-heading">
+    <h2>My Documents</h2>
+    <p>Manage saved originals and share their QR certificates.</p>
+  </div>
+  <div class="ledger-list">
+    {% for block in ledger_blocks %}
+      <article class="block-card">
+        <div class="block-topline">
+          <span class="verified-pill">Verified Original</span>
+          <span>{{ block.timestamp|date:"M d, Y H:i" }}</span>
+        </div>
+        <strong>{{ block.document.title }}</strong>
+        <div class="document-meta">
+          <span><b>Owner</b>{{ block.document.owner }}</span>
+          <span><b>File</b>{{ block.document.file_name }}</span>
+          <span><b>Saved by</b>{{ block.document.uploaded_by.username }}</span>
+        </div>
+        <div class="block-actions">
+          <a class="certificate-link primary-link" href="{% url 'certificate' block.document.verification_token %}">QR Certificate</a>
+          {% if block.document.document_file %}
+            <a class="certificate-link" href="{% url 'open_document' block.document.id %}" target="_blank" rel="noopener">Open Document</a>
+          {% endif %}
+          {% if user.is_superuser or block.document.uploaded_by == user %}
+            <a class="certificate-link" href="{% url 'edit_document' block.document.id %}">Edit</a>
+            <a class="certificate-link danger-link" href="{% url 'delete_document' block.document.id %}">Delete</a>
+          {% endif %}
+        </div>
+        <details class="technical-details">
+          <summary>View technical details</summary>
+          <code>Document hash: {{ block.document.document_hash }}</code>
+          <code>Previous block: {{ block.previous_hash }}</code>
+          <code>Block hash: {{ block.block_hash }}</code>
+        </details>
+      </article>
+    {% empty %}
+      <div class="empty-ledger">No documents registered yet.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

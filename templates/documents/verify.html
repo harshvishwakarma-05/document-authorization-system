@@ -1,0 +1,50 @@
+{% extends "documents/base.html" %}
+
+{% block title %}Verify Document | DocuChain Django{% endblock %}
+
+{% block content %}
+<section class="workspace-grid">
+  <form method="post" enctype="multipart/form-data" class="tool-panel">
+    {% csrf_token %}
+    <div class="panel-heading">
+      <h2>Check Document</h2>
+      <p>Upload a file. The app will tell you clearly if it is original or fake.</p>
+    </div>
+
+    <label class="field">
+      <span>Document file</span>
+      {{ form.document }}
+      {{ form.document.errors }}
+    </label>
+
+    <button type="submit">Check Now</button>
+  </form>
+
+  <aside class="result-panel">
+    <div class="panel-heading">
+      <h2>Verification Result</h2>
+      <p>Result returned from the Django database check.</p>
+    </div>
+    {% if result %}
+      <div class="result-card {{ result.status }}">
+        <span class="result-badge">{{ result.title }}</span>
+        <h3>{{ result.title }}</h3>
+        <p>{{ result.message }}</p>
+      </div>
+    {% else %}
+      <div class="result-card neutral">
+        <span class="result-badge">Ready</span>
+        <h3>Select a document</h3>
+        <p>Use the same file to get Original Document. Use a changed or different file to get Fake or Changed Document.</p>
+      </div>
+    {% endif %}
+
+    {% if document_hash %}
+      <div class="hash-box">
+        <span>Calculated document hash</span>
+        <code>{{ document_hash }}</code>
+      </div>
+    {% endif %}
+  </aside>
+</section>
+{% endblock %}

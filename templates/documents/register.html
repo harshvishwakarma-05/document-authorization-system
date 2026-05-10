@@ -1,0 +1,42 @@
+{% extends "documents/base.html" %}
+
+{% block title %}Register Document | DocuChain Django{% endblock %}
+
+{% block content %}
+<section class="workspace-grid single">
+  <form method="post" enctype="multipart/form-data" class="tool-panel">
+    {% csrf_token %}
+    <div class="panel-heading">
+      <h2>Add Original Document</h2>
+      <p>Upload the real document once. After saving, you can share its QR certificate.</p>
+    </div>
+
+    <label class="field">
+      <span>Document owner</span>
+      {{ form.owner }}
+      {{ form.owner.errors }}
+    </label>
+
+    <label class="field">
+      <span>Document title</span>
+      {{ form.title }}
+      {{ form.title.errors }}
+    </label>
+
+    <label class="field">
+      <span>Document file</span>
+      {{ form.document }}
+      {{ form.document.errors }}
+    </label>
+
+    <button type="submit">Save Original</button>
+
+    {% if document_hash %}
+      <div class="hash-box">
+        <span>Calculated document hash</span>
+        <code>{{ document_hash }}</code>
+      </div>
+    {% endif %}
+  </form>
+</section>
+{% endblock %}
