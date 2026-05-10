@@ -1,30 +1,27 @@
 import os
 from pathlib import Path
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-docuchain-mini-project-development-key")
-DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
-ALLOWED_HOSTS = ["*"]
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-document-auth-key")
+DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
 
-# Set this to the address other devices use to open your laptop server.
-# Example: "http://10.172.249.37:8000"
-SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "")
+ALLOWED_HOSTS = [
+    "document-authorization-system.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
+
+SITE_BASE_URL = os.environ.get(
+    "SITE_BASE_URL",
+    "https://document-authorization-system.onrender.com"
+)
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://document-authorization-system.onrender.com",
     "https://*.ngrok-free.app",
     "https://*.ngrok-free.dev",
 ]
-
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SESSION_COOKIE_HTTPONLY = True
-CSRF_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SAMESITE = "Lax"
-X_FRAME_OPTIONS = "DENY"
-SECURE_CONTENT_TYPE_NOSNIFF = True
-REFERRER_POLICY = "same-origin"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -38,6 +35,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -87,6 +85,8 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -98,13 +98,13 @@ LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "login"
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+X_FRAME_OPTIONS = "DENY"
+SECURE_CONTENT_TYPE_NOSNIFF = True
+REFERRER_POLICY = "same-origin"
 
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
-    ...
-]
-ALLOWED_HOSTS = ["document-authorization-system.onrender.com", "localhost", "127.0.0.1"]
-SITE_BASE_URL = "https://document-authorization-system.onrender.com"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
