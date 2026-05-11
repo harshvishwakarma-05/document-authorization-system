@@ -179,34 +179,23 @@ def delete_document_view(request, pk):
 
 
 def certificate_view(request, token):
+
     document = get_object_or_404(
-        DocumentRecord.objects.select_related("uploaded_by", "ledger_block"),
-        verification_token=token,
+        DocumentRecord,
+        verification_token=token
     )
-    certificate_url = public_url(request, redirect("certificate", token=document.verification_token).url)
-    qr_code = make_qr_code(certificate_url)
-    file_url = public_url(
-        request,
-        redirect("download_certificate_document", token=document.verification_token).url,
-    ) if document.document_file else None
-    file_qr_code = make_qr_code(file_url) if file_url else None
+
+    file_url = request.build_absolute_uri(
+        reverse(
+            'download_certificate_document',
+            args=[document.verification_token]
+        )
+    )
 
     return render(request, "documents/certificate.html", {
         "document": document,
-        "certificate_url": certificate_url,
-        "qr_code": qr_code,
         "file_url": file_url,
-        "file_qr_code": file_qr_code,
-        "ledger_valid": ledger_is_valid(),
     })
-file_url = request.build_absolute_uri(
-    reverse(
-        'download_certificate_document',
-        args=[document.verification_token]
-    )
-)
-
-file_qr = qrcode.make(file_url)
 def make_qr_code(value):
     try:
         import qrcode
