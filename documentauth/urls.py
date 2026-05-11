@@ -7,6 +7,11 @@ from django.urls import include, path
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("documents.urls")),
+    path(
+    'download/<uuid:token>/',
+    views.download_certificate_document,
+    name='download_certificate_document'
+),
 ]
 
 if settings.DEBUG:

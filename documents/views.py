@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import DocumentEditForm, DocumentUploadForm, DocumentVerifyForm, SignUpForm
 from .models import DocumentRecord, LedgerBlock
-
+from django.urls import reverse
 
 def signup_view(request):
     if request.user.is_authenticated:
@@ -199,8 +199,14 @@ def certificate_view(request, token):
         "file_qr_code": file_qr_code,
         "ledger_valid": ledger_is_valid(),
     })
+file_url = request.build_absolute_uri(
+    reverse(
+        'download_certificate_document',
+        args=[document.verification_token]
+    )
+)
 
-
+file_qr = qrcode.make(file_url)
 def make_qr_code(value):
     try:
         import qrcode
@@ -234,7 +240,6 @@ def open_certificate_document_view(request, token):
 
 
 
-
 def download_certificate_document(request, token):
     document = get_object_or_404(
         DocumentRecord,
@@ -243,8 +248,7 @@ def download_certificate_document(request, token):
 
     return FileResponse(
         document.document_file.open('rb'),
-        as_attachment=True,
-        filename=document.file_name
+        as_attachment=True
     )
 
 @login_required
