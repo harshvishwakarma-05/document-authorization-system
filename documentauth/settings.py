@@ -1,27 +1,32 @@
 import os
 from pathlib import Path
 
+import dj_database_url
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-document-auth-key")
-DEBUG = os.environ.get("DJANGO_DEBUG", "False") == "True"
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "django-insecure-docuchain-mini-project-development-key")
+DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
+ALLOWED_HOSTS = ["*"]
 
-ALLOWED_HOSTS = [
-    "document-authorization-system.onrender.com",
-    "localhost",
-    "127.0.0.1",
-]
-
-SITE_BASE_URL = os.environ.get(
-    "SITE_BASE_URL",
-    "https://document-authorization-system.onrender.com"
-)
+# Set this to the address other devices use to open your laptop server.
+# Example: "http://10.172.249.37:8000"
+SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "")
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://document-authorization-system.onrender.com",
     "https://*.ngrok-free.app",
     "https://*.ngrok-free.dev",
 ]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+X_FRAME_OPTIONS = "DENY"
+SECURE_CONTENT_TYPE_NOSNIFF = True
+REFERRER_POLICY = "same-origin"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -65,10 +70,11 @@ TEMPLATES = [
 WSGI_APPLICATION = "documentauth.wsgi.application"
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -98,14 +104,4 @@ LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "login"
 
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-SESSION_COOKIE_HTTPONLY = True
-CSRF_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SAMESITE = "Lax"
-X_FRAME_OPTIONS = "DENY"
-SECURE_CONTENT_TYPE_NOSNIFF = True
-REFERRER_POLICY = "same-origin"
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
