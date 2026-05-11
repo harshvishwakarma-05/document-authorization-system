@@ -3,7 +3,7 @@ from .forms import DocumentEditForm, DocumentUploadForm, DocumentVerifyForm, For
 
 import base64
 from io import BytesIO
-
+import qrcode
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
