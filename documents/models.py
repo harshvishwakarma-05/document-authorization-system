@@ -55,3 +55,9 @@ class LedgerBlock(models.Model):
 
     def is_valid(self):
         return self.block_hash == self.make_hash(self.payload())
+
+
+
+document_file = models.FileField(upload_to='documents/')
+verification_token = models.UUIDField(unique=True, editable=False)
+verification_token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)

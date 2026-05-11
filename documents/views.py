@@ -233,17 +233,19 @@ def open_certificate_document_view(request, token):
     )
 
 
-def download_certificate_document_view(request, token):
-    document = get_object_or_404(DocumentRecord, verification_token=token)
-    if not document.document_file:
-        raise Http404("Document file not found.")
 
-    return FileResponse(
-        document.document_file.open("rb"),
-        as_attachment=True,
-        filename=document.file_name,
+
+def download_certificate_document(request, token):
+    document = get_object_or_404(
+        DocumentRecord,
+        verification_token=token
     )
 
+    return FileResponse(
+        document.document_file.open('rb'),
+        as_attachment=True,
+        filename=document.file_name
+    )
 
 @login_required
 def open_document_view(request, pk):
