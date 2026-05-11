@@ -43,7 +43,7 @@
       <p>Use the certificate QR for proof, or the file QR to open the uploaded document.</p>
     </div>
 
-    {% if qr_code %}
+   <!--  {% if qr_code %}
       <h3 class="qr-title">Certificate QR</h3>
       <img class="qr-code" src="{{ qr_code }}" alt="QR code for verified document">
     {% else %}
@@ -57,7 +57,7 @@
     <div class="hash-box">
       <span>Certificate URL</span>
       <code>{{ certificate_url }}</code>
-    </div>
+    </div> -->
 
     {% if file_qr_code %}
       <h3 class="qr-title">Download File QR</h3>
