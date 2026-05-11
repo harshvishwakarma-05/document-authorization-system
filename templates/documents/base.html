@@ -4,8 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block title %}Document Authorization System{% endblock %}</title>
-
+  <title>{% block title %}DocuChain Django{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'documents/style.css' %}">
 </head>
 <body>
@@ -13,8 +12,7 @@
     <section class="hero">
       <div>
         <p class="eyebrow">Document Portal</p>
-       <h1>Document Authorization System</h1>
-
+        <h1>Manage Your Documents</h1>
         <p class="hero-copy">
           Upload, verify, and share document records from one simple place.
         </p>
@@ -51,21 +49,16 @@
 
     {% block content %}{% endblock %}
   </main>
-</body>
-<<<<<<< HEAD
-<script>
-  document.querySelectorAll(".toggle-password").forEach((button) => {
-    button.addEventListener("click", () => {
-      const input = document.getElementById(button.dataset.target);
-      if (!input) return;
-
-      const isHidden = input.type === "password";
-      input.type = isHidden ? "text" : "password";
-      button.textContent = isHidden ? "Hide" : "Show";
+  <script>
+    document.querySelectorAll(".toggle-password").forEach((button) => {
+      button.addEventListener("click", () => {
+        const input = document.getElementById(button.dataset.target);
+        if (!input) return;
+        const isHidden = input.type === "password";
+        input.type = isHidden ? "text" : "password";
+        button.textContent = isHidden ? "Hide" : "Show";
+      });
     });
-  });
-</script>
-
-=======
->>>>>>> dc6517ec272cf5ca0aee63c8db5b7412ca1fa5a0
+  </script>
+</body>
 </html>
