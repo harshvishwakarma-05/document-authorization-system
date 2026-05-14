@@ -1,20 +1,18 @@
-from django.contrib.auth.models import User
-from .forms import DocumentEditForm, DocumentUploadForm, DocumentVerifyForm, ForgotPasswordForm, SignUpForm
-
 import base64
 from io import BytesIO
-import qrcode
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.db import transaction
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import DocumentEditForm, DocumentUploadForm, DocumentVerifyForm, SignUpForm
+from .forms import DocumentEditForm, DocumentUploadForm, DocumentVerifyForm, ForgotPasswordForm, SignUpForm
 from .models import DocumentRecord, LedgerBlock
-from django.urls import reverse
+
 
 def signup_view(request):
     if request.user.is_authenticated:
@@ -29,18 +27,17 @@ def signup_view(request):
 
     return render(request, "documents/signup.html", {"form": form})
 
+
 def forgot_password_view(request):
     if request.user.is_authenticated:
         return redirect("dashboard")
 
     form = ForgotPasswordForm(request.POST or None)
-
     if request.method == "POST" and form.is_valid():
         user = User.objects.filter(
             username=form.cleaned_data["username"],
             email=form.cleaned_data["email"],
         ).first()
-
         if not user:
             messages.warning(request, "Username and email do not match any account.")
             return render(request, "documents/forgot_password.html", {"form": form})
@@ -51,6 +48,8 @@ def forgot_password_view(request):
         return redirect("login")
 
     return render(request, "documents/forgot_password.html", {"form": form})
+
+
 @login_required
 def dashboard_view(request):
     if request.user.is_superuser:
@@ -85,11 +84,16 @@ def register_document_view(request):
         last_block = LedgerBlock.objects.order_by("-index").first()
         previous_hash = last_block.block_hash if last_block else "GENESIS"
 
+        uploaded_file = form.cleaned_data["document"]
+        document_content = uploaded_file.read()
+        uploaded_file.seek(0)
         document = DocumentRecord.objects.create(
             owner=form.cleaned_data["owner"],
             title=form.cleaned_data["title"],
-            file_name=form.cleaned_data["document"].name,
-            document_file=form.cleaned_data["document"],
+            file_name=uploaded_file.name,
+            document_file=uploaded_file,
+            document_content=document_content,
+            content_type=getattr(uploaded_file, "content_type", "") or "application/octet-stream",
             document_hash=document_hash,
             uploaded_by=request.user,
         )
@@ -179,23 +183,28 @@ def delete_document_view(request, pk):
 
 
 def certificate_view(request, token):
-
     document = get_object_or_404(
-        DocumentRecord,
-        verification_token=token
+        DocumentRecord.objects.select_related("uploaded_by", "ledger_block"),
+        verification_token=token,
     )
-
-    file_url = request.build_absolute_uri(
-        reverse(
-            'download_certificate_document',
-            args=[document.verification_token]
-        )
-    )
+    certificate_url = public_url(request, redirect("certificate", token=document.verification_token).url)
+    qr_code = make_qr_code(certificate_url)
+    file_url = public_url(
+        request,
+        redirect("download_certificate_document", token=document.verification_token).url,
+    ) if document.has_stored_document else None
+    file_qr_code = make_qr_code(file_url) if file_url else None
 
     return render(request, "documents/certificate.html", {
         "document": document,
+        "certificate_url": certificate_url,
+        "qr_code": qr_code,
         "file_url": file_url,
+        "file_qr_code": file_qr_code,
+        "ledger_valid": ledger_is_valid(),
     })
+
+
 def make_qr_code(value):
     try:
         import qrcode
@@ -218,39 +227,38 @@ def public_url(request, path):
 
 def open_certificate_document_view(request, token):
     document = get_object_or_404(DocumentRecord, verification_token=token)
-    if not document.document_file:
-        raise Http404("Document file not found.")
-
-    return FileResponse(
-        document.document_file.open("rb"),
-        as_attachment=False,
-        filename=document.file_name,
-    )
+    return document_response(document, as_attachment=False)
 
 
+def download_certificate_document_view(request, token):
+    document = get_object_or_404(DocumentRecord, verification_token=token)
+    return document_response(document, as_attachment=True)
 
-def download_certificate_document(request, token):
-    document = get_object_or_404(
-        DocumentRecord,
-        verification_token=token
-    )
-
-    return FileResponse(
-        document.document_file.open('rb'),
-        as_attachment=True
-    )
 
 @login_required
 def open_document_view(request, pk):
     document = get_user_document(request, pk)
-    if not document.document_file:
-        raise Http404("Document file not found.")
+    return document_response(document, as_attachment=False)
 
-    return FileResponse(
-        document.document_file.open("rb"),
-        as_attachment=False,
-        filename=document.file_name,
-    )
+
+def document_response(document, as_attachment):
+    if document.document_content:
+        response = HttpResponse(document.document_content, content_type=document.content_type or "application/octet-stream")
+        disposition = "attachment" if as_attachment else "inline"
+        response["Content-Disposition"] = f'{disposition}; filename="{document.file_name}"'
+        return response
+
+    if document.document_file:
+        try:
+            return FileResponse(
+                document.document_file.open("rb"),
+                as_attachment=as_attachment,
+                filename=document.file_name,
+            )
+        except FileNotFoundError:
+            pass
+
+    raise Http404("Document file not found.")
 
 
 def get_user_document(request, pk):

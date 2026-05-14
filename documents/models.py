@@ -11,6 +11,8 @@ class DocumentRecord(models.Model):
     title = models.CharField(max_length=160)
     file_name = models.CharField(max_length=255)
     document_file = models.FileField(upload_to="verified_documents/", blank=True)
+    document_content = models.BinaryField(blank=True, null=True)
+    content_type = models.CharField(max_length=120, blank=True, default="application/octet-stream")
     document_hash = models.CharField(max_length=64, unique=True)
     verification_token = models.CharField(max_length=64, unique=True, default=uuid.uuid4)
     uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -21,6 +23,10 @@ class DocumentRecord(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.owner}"
+
+    @property
+    def has_stored_document(self):
+        return bool(self.document_content or self.document_file)
 
 
 class LedgerBlock(models.Model):
@@ -55,9 +61,3 @@ class LedgerBlock(models.Model):
 
     def is_valid(self):
         return self.block_hash == self.make_hash(self.payload())
-
-
-
-document_file = models.FileField(upload_to='documents/')
-verification_token = models.UUIDField(unique=True, editable=False)
-verification_token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)

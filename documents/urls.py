@@ -1,6 +1,6 @@
 from django.contrib.auth import views as auth_views
+from django.urls import path
 
-from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -16,9 +16,5 @@ urlpatterns = [
     path("documents/<int:pk>/delete/", views.delete_document_view, name="delete_document"),
     path("certificate/<str:token>/", views.certificate_view, name="certificate"),
     path("certificate/<str:token>/document/", views.open_certificate_document_view, name="open_certificate_document"),
-path(
-    'download/<uuid:token>/',
-    views.download_certificate_document,
-    name='download_certificate_document'
-),
+    path("certificate/<str:token>/download/", views.download_certificate_document_view, name="download_certificate_document"),
 ]

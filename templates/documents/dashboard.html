@@ -14,6 +14,18 @@
   </a>
 </section>
 
+{% if site_base_url %}
+  <section class="security-notice success-notice">
+    <strong>Public link active</strong>
+    <span>QR codes use {{ site_base_url }} and can be opened on other devices while the server is running.</span>
+  </section>
+{% else %}
+  <section class="security-notice warning-notice">
+    <strong>Public link not set</strong>
+    <span>QR codes may work only on this laptop. Set SITE_BASE_URL for mobile and other laptops.</span>
+  </section>
+{% endif %}
+
 <section class="workspace-grid">
   <div class="tool-panel">
     <div class="panel-heading">
@@ -83,7 +95,7 @@
         </div>
         <div class="block-actions">
           <a class="certificate-link primary-link" href="{% url 'certificate' block.document.verification_token %}">QR Certificate</a>
-          {% if block.document.document_file %}
+          {% if block.document.has_stored_document %}
             <a class="certificate-link" href="{% url 'open_document' block.document.id %}" target="_blank" rel="noopener">Open Document</a>
           {% endif %}
           {% if user.is_superuser or block.document.uploaded_by == user %}
