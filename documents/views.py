@@ -4,28 +4,14 @@ from io import BytesIO
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
-from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction
-from django.core.mail import send_mail
 from django.http import FileResponse, Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import DocumentEditForm, DocumentUploadForm, DocumentVerifyForm, ForgotPasswordForm, SignUpForm
-from .models import DocumentRecord, LedgerBlock, UserProfile
-
-
-class VerifiedLoginView(LoginView):
-    template_name = "documents/login.html"
-
-    def form_valid(self, form):
-        user = form.get_user()
-        profile, _ = UserProfile.objects.get_or_create(user=user)
-        if not user.is_staff and not profile.email_verified:
-            messages.warning(self.request, "Please verify your email before login.")
-            return redirect("login")
-        return super().form_valid(form)
+from .models import DocumentRecord, LedgerBlock
 
 
 def signup_view(request):
@@ -34,30 +20,12 @@ def signup_view(request):
 
     form = SignUpForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
-        user = form.save(commit=False)
-        user.is_active = True
-        user.save()
-        profile = UserProfile.objects.create(user=user)
-        verification_url = public_url(request, redirect("verify_email", token=profile.email_token).url)
-        email_sent = send_verification_email(user, verification_url)
-        if not email_sent:
-            profile.delete()
-            user.delete()
-            messages.warning(request, "Verification email could not be sent. Please check your email address or try again later.")
-            return render(request, "documents/signup.html", {"form": form})
-
-        messages.success(request, "Account created. Please check your Gmail inbox and verify your email before login.")
-        return redirect("login")
+        user = form.save()
+        login(request, user)
+        messages.success(request, "Account created successfully.")
+        return redirect("dashboard")
 
     return render(request, "documents/signup.html", {"form": form})
-
-
-def verify_email_view(request, token):
-    profile = get_object_or_404(UserProfile.objects.select_related("user"), email_token=token)
-    profile.email_verified = True
-    profile.save(update_fields=["email_verified"])
-    messages.success(request, "Email verified successfully. You can login now.")
-    return redirect("login")
 
 
 def forgot_password_view(request):
@@ -253,23 +221,6 @@ def public_url(request, path):
     if base_url:
         return f"{base_url}{path}"
     return request.build_absolute_uri(path)
-
-
-def send_verification_email(user, verification_url):
-    if not user.email:
-        return False
-
-    try:
-        send_mail(
-            subject="Verify your Document Authorization account",
-            message=f"Hello {user.username},\n\nClick this link to verify your email:\n{verification_url}\n\nThank you.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False,
-        )
-        return True
-    except Exception:
-        return False
 
 
 def open_certificate_document_view(request, token):
