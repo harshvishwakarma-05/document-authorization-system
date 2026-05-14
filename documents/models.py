@@ -29,6 +29,15 @@ class DocumentRecord(models.Model):
         return bool(self.document_content or self.document_file)
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
+    email_verified = models.BooleanField(default=False)
+    email_token = models.CharField(max_length=64, unique=True, default=uuid.uuid4)
+
+    def __str__(self):
+        return self.user.username
+
+
 class LedgerBlock(models.Model):
     document = models.OneToOneField(DocumentRecord, on_delete=models.CASCADE, related_name="ledger_block")
     index = models.PositiveIntegerField(unique=True)
