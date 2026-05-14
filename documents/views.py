@@ -188,7 +188,6 @@ def certificate_view(request, token):
         verification_token=token,
     )
     certificate_url = public_url(request, redirect("certificate", token=document.verification_token).url)
-    qr_code = make_qr_code(certificate_url)
     file_url = public_url(
         request,
         redirect("download_certificate_document", token=document.verification_token).url,
@@ -198,7 +197,6 @@ def certificate_view(request, token):
     return render(request, "documents/certificate.html", {
         "document": document,
         "certificate_url": certificate_url,
-        "qr_code": qr_code,
         "file_url": file_url,
         "file_qr_code": file_qr_code,
         "ledger_valid": ledger_is_valid(),

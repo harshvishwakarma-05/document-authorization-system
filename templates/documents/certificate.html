@@ -39,32 +39,21 @@
 
   <aside class="result-panel">
     <div class="panel-heading">
-      <h2>QR Codes</h2>
-      <p>Use the certificate QR for proof, or the file QR to open the uploaded document.</p>
-    </div>
-
-    {% if qr_code %}
-      <h3 class="qr-title">Certificate QR</h3>
-      <img class="qr-code" src="{{ qr_code }}" alt="QR code for verified document">
-    {% else %}
-      <div class="result-card neutral">
-        <span class="result-badge">QR setup</span>
-        <h3>QR package not installed</h3>
-        <p>Install qrcode using requirements.txt to display the QR image.</p>
-      </div>
-    {% endif %}
-
-    <div class="hash-box">
-      <span>Certificate URL</span>
-      <code>{{ certificate_url }}</code>
+      <h2>Download QR Code</h2>
+      <p>Scan this QR code to download the uploaded original document.</p>
     </div>
 
     {% if file_qr_code %}
-      <h3 class="qr-title">Download File QR</h3>
       <img class="qr-code" src="{{ file_qr_code }}" alt="QR code to download uploaded original document">
       <div class="hash-box">
         <span>Download file URL</span>
         <code>{{ file_url }}</code>
+      </div>
+    {% else %}
+      <div class="result-card neutral">
+        <span class="result-badge">QR setup</span>
+        <h3>QR not available</h3>
+        <p>Install qrcode and make sure this document has a stored file.</p>
       </div>
     {% endif %}
   </aside>
