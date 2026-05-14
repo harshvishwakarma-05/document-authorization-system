@@ -23,11 +23,6 @@
       {{ form.title.errors }}
     </label>
 
-    <div class="hash-box">
-      <span>Document hash</span>
-      <code>{{ document.document_hash }}</code>
-    </div>
-
     <div class="button-row">
       <button type="submit">Save Changes</button>
       <a class="button-link secondary" href="{% url 'dashboard' %}">Cancel</a>

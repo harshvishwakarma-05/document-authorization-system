@@ -17,15 +17,7 @@
       <p><strong>File name:</strong> {{ document.file_name }}</p>
       <p><strong>Uploaded by:</strong> {{ document.uploaded_by.username }}</p>
       <p><strong>Registered on:</strong> {{ document.created_at|date:"M d, Y H:i" }}</p>
-      <p><strong>Block number:</strong> #{{ document.ledger_block.index }}</p>
     </div>
-
-    <details class="technical-details open-details" open>
-      <summary>Technical verification details</summary>
-      <code>Document hash: {{ document.document_hash }}</code>
-      <code>Previous block: {{ document.ledger_block.previous_hash }}</code>
-      <code>Block hash: {{ document.ledger_block.block_hash }}</code>
-    </details>
 
     {% if document.has_stored_document %}
       <p class="helper-text">
@@ -45,10 +37,6 @@
 
     {% if file_qr_code %}
       <img class="qr-code" src="{{ file_qr_code }}" alt="QR code to download uploaded original document">
-      <div class="hash-box">
-        <span>Download file URL</span>
-        <code>{{ file_url }}</code>
-      </div>
     {% else %}
       <div class="result-card neutral">
         <span class="result-badge">QR setup</span>

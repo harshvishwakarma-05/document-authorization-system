@@ -103,12 +103,6 @@
             <a class="certificate-link danger-link" href="{% url 'delete_document' block.document.id %}">Delete</a>
           {% endif %}
         </div>
-        <details class="technical-details">
-          <summary>View technical details</summary>
-          <code>Document hash: {{ block.document.document_hash }}</code>
-          <code>Previous block: {{ block.previous_hash }}</code>
-          <code>Block hash: {{ block.block_hash }}</code>
-        </details>
       </article>
     {% empty %}
       <div class="empty-ledger">No documents registered yet.</div>
