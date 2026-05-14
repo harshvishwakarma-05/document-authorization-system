@@ -33,20 +33,28 @@ def signup_view(request):
         return redirect("dashboard")
 
     form = SignUpForm(request.POST or None)
+
     if request.method == "POST" and form.is_valid():
         user = form.save(commit=False)
         user.is_active = True
         user.save()
+
         profile = UserProfile.objects.create(user=user)
-        verification_url = public_url(request, redirect("verify_email", token=profile.email_token).url)
+        verification_url = public_url(
+            request,
+            redirect("verify_email", token=profile.email_token).url
+        )
+
         send_verification_email(user, verification_url)
+
         messages.success(request, "Account created. Please verify your email before login.")
+
         if settings.EMAIL_BACKEND.endswith("console.EmailBackend"):
             messages.warning(request, f"Demo verification link: {verification_url}")
+
         return redirect("login")
 
     return render(request, "documents/signup.html", {"form": form})
-
 
 def verify_email_view(request, token):
     profile = get_object_or_404(UserProfile.objects.select_related("user"), email_token=token)

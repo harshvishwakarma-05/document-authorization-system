@@ -1,26 +1,50 @@
-def signup_view(request):
-    if request.user.is_authenticated:
-        return redirect("dashboard")
+{% extends "documents/base.html" %}
 
-    form = SignUpForm(request.POST or None)
+{% block title %}Sign Up | DocuChain Django{% endblock %}
 
-    if request.method == "POST" and form.is_valid():
-        user = form.save(commit=False)
-        user.is_active = True
-        user.save()
+{% block content %}
+<section class="login-section">
+  <form method="post" class="tool-panel login-panel">
+    {% csrf_token %}
+    <div class="panel-heading">
+      <h2>Create User</h2>
+      <p>Use a valid email address. A verification link will be sent before login.</p>
+    </div>
 
-        profile = UserProfile.objects.create(user=user)
-        verification_url = public_url(
-            request,
-            redirect("verify_email", token=profile.email_token).url
-        )
+    {{ form.non_field_errors }}
 
-        send_verification_email(user, verification_url)
+    <label class="field">
+      <span>Username</span>
+      {{ form.username }}
+      {{ form.username.errors }}
+    </label>
 
-        messages.success(request, "Account created. Please verify your email before login.")
-        if settings.EMAIL_BACKEND.endswith("console.EmailBackend"):
-            messages.warning(request, f"Demo verification link: {verification_url}")
+    <label class="field">
+      <span>Email</span>
+      {{ form.email }}
+      {{ form.email.errors }}
+    </label>
 
-        return redirect("login")
+    <label class="field">
+      <span>Password</span>
+      <div class="password-control">
+        {{ form.password1 }}
+        <button type="button" class="toggle-password" data-target="id_password1">Show</button>
+      </div>
+      {{ form.password1.errors }}
+    </label>
 
-    return render(request, "documents/signup.html", {"form": form})
+    <label class="field">
+      <span>Confirm password</span>
+      <div class="password-control">
+        {{ form.password2 }}
+        <button type="button" class="toggle-password" data-target="id_password2">Show</button>
+      </div>
+      {{ form.password2.errors }}
+    </label>
+
+    <button type="submit">Create Account</button>
+    <p class="helper-text">Already registered? <a href="{% url 'login' %}">Login</a></p>
+  </form>
+</section>
+{% endblock %}
