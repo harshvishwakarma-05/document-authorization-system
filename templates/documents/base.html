@@ -19,8 +19,13 @@
       </div>
       <div class="status-panel">
         <span class="status-dot"></span>
-        <strong>Account active</strong>
-        <small>Your saved documents are ready to manage.</small>
+        {% if user.is_authenticated %}
+          <strong>Account active</strong>
+          <small>Your saved documents are ready to manage.</small>
+        {% else %}
+          <strong>Welcome</strong>
+          <small>Login or create an account to continue.</small>
+        {% endif %}
       </div>
     </section>
 
