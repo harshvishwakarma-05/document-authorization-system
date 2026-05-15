@@ -26,7 +26,10 @@
 <label>Replace File</label>
     <input type="file" name="document_file">
     <div class="button-row">
-      <button type="submit">Save Changes</button>
+     <a href="{% url 'update_document' document.id %}"
+   class="button-link">
+   Edit Document
+</a>
       <a class="button-link secondary" href="{% url 'dashboard' %}">Cancel</a>
     </div>
   </form>

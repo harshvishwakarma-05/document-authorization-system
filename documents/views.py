@@ -12,7 +12,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import DocumentEditForm, DocumentUploadForm, DocumentVerifyForm, ForgotPasswordForm, SignUpForm
 from .models import DocumentRecord, LedgerBlock
-
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 
 def signup_view(request):
     if request.user.is_authenticated:
@@ -289,19 +290,28 @@ def ledger_is_valid():
 
 @login_required
 def update_document(request, id):
+
     document = get_object_or_404(DocumentRecord, id=id)
 
     if request.method == "POST":
-        document.title = request.POST.get("title")
+
         document.owner = request.POST.get("owner")
+        document.title = request.POST.get("title")
 
         if request.FILES.get("document_file"):
             document.document_file = request.FILES.get("document_file")
 
         document.save()
 
-        return redirect("certificate_view", token=document.verification_token)
+        return redirect(
+            'certificate_view',
+            token=document.verification_token
+        )
 
-    return render(request, "documents/edit_document.html", {
-        "document": document
-    })
+    return render(
+        request,
+        "documents/edit_document.html",
+        {
+            "document": document
+        }
+    )

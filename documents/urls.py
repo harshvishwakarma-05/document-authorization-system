@@ -20,8 +20,6 @@ urlpatterns = [
     path("certificate/<str:token>/download/", views.download_certificate_document_view, name="download_certificate_document"),
 
     path(
-    'document/edit/<int:id>/',
-    views.update_document,
-    name='update_document'
+    'document/edit/<int:id>/',views.update_document, name='update_document'
 ),
 ]
