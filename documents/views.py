@@ -68,6 +68,7 @@ def dashboard_view(request):
         "document_count": documents.count(),
         "ledger_blocks": ledger_blocks[:10],
         "site_base_url": getattr(settings, "SITE_BASE_URL", ""),
+        "is_reviewer": is_reviewer,
     }
     return render(request, "documents/dashboard.html", context)
 
