@@ -152,29 +152,43 @@ def verify_document_view(request):
 @login_required
 @transaction.atomic
 def edit_document_view(request, pk):
+
     document = get_user_document(request, pk)
-   form = DocumentEditForm(
-    request.POST or None,
-    request.FILES or None,
-    instance=document
-)
 
- if request.method == "POST" and form.is_valid():
+    form = DocumentEditForm(
+        request.POST or None,
+        request.FILES or None,
+        instance=document
+    )
 
-    updated_document = form.save(commit=False)
+    if request.method == "POST" and form.is_valid():
 
-    if request.FILES.get("document_file"):
-        updated_document.document_file = request.FILES.get("document_file")
+        updated_document = form.save(commit=False)
 
-    updated_document.save()
+        if request.FILES.get("document_file"):
+            updated_document.document_file = request.FILES.get(
+                "document_file"
+            )
+
+        updated_document.save()
+
         rebuild_ledger()
-        messages.success(request, "Document details updated successfully.")
+
+        messages.success(
+            request,
+            "Document updated successfully."
+        )
+
         return redirect("dashboard")
 
-    return render(request, "documents/edit_document.html", {
-        "form": form,
-        "document": document,
-    })
+    return render(
+        request,
+        "documents/edit_document.html",
+        {
+            "form": form,
+            "document": document,
+        }
+    )
 
 
 @login_required
