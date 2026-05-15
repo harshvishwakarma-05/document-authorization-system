@@ -153,10 +153,20 @@ def verify_document_view(request):
 @transaction.atomic
 def edit_document_view(request, pk):
     document = get_user_document(request, pk)
-    form = DocumentEditForm(request.POST or None, instance=document)
+   form = DocumentEditForm(
+    request.POST or None,
+    request.FILES or None,
+    instance=document
+)
 
-    if request.method == "POST" and form.is_valid():
-        form.save()
+ if request.method == "POST" and form.is_valid():
+
+    updated_document = form.save(commit=False)
+
+    if request.FILES.get("document_file"):
+        updated_document.document_file = request.FILES.get("document_file")
+
+    updated_document.save()
         rebuild_ledger()
         messages.success(request, "Document details updated successfully.")
         return redirect("dashboard")
@@ -288,30 +298,3 @@ def ledger_is_valid():
         previous_hash = block.block_hash
     return True
 
-@login_required
-def update_document(request, id):
-
-    document = get_object_or_404(DocumentRecord, id=id)
-
-    if request.method == "POST":
-
-        document.owner = request.POST.get("owner")
-        document.title = request.POST.get("title")
-
-        if request.FILES.get("document_file"):
-            document.document_file = request.FILES.get("document_file")
-
-        document.save()
-
-        return redirect(
-            'certificate_view',
-            token=document.verification_token
-        )
-
-    return render(
-        request,
-        "documents/edit_document.html",
-        {
-            "document": document
-        }
-    )
