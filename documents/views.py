@@ -175,6 +175,7 @@ def edit_document_view(request, pk):
             document_content = uploaded_file.read()
 
             updated_document.document_content = document_content
+            updated_document.content_type = getattr(uploaded_file, "content_type", "") or "application/octet-stream"
 
             uploaded_file.seek(0)
 
@@ -188,6 +189,11 @@ def edit_document_view(request, pk):
             uploaded_file.seek(0)
 
             updated_document.document_hash = hasher.hexdigest()
+
+            # Check if this hash already exists on another document to avoid IntegrityError
+            if DocumentRecord.objects.filter(document_hash=updated_document.document_hash).exclude(pk=document.pk).exists():
+                messages.warning(request, "This file is already saved as another original document.")
+                return render(request, "documents/edit_document.html", {"form": form, "document": document})
 
         updated_document.save()
 
