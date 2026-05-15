@@ -43,12 +43,14 @@ class SignUpForm(UserCreationForm):
 class DocumentUploadForm(forms.Form):
     owner = forms.CharField(max_length=120)
     title = forms.CharField(max_length=160)
+    cost = forms.DecimalField(max_digits=10, decimal_places=2, initial=0.00, required=False)
     document = forms.FileField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["owner"].widget.attrs.update({"placeholder": "Example: College Office"})
         self.fields["title"].widget.attrs.update({"placeholder": "Example: Degree Certificate"})
+        self.fields["cost"].widget.attrs.update({"placeholder": "0.00"})
 
     def document_hash(self):
         uploaded_file = self.cleaned_data["document"]
@@ -86,7 +88,7 @@ class DocumentEditForm(forms.ModelForm):
 
     class Meta:
         model = DocumentRecord
-        fields = ["owner", "title", "document_file"]
+        fields = ["owner", "title", "cost", "document_file"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

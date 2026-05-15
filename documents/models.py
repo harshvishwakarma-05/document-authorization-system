@@ -19,6 +19,7 @@ class DocumentRecord(models.Model):
     document_hash = models.CharField(max_length=64, unique=True)
     verification_token = models.CharField(max_length=64, unique=True, default=uuid.uuid4)
     uploaded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    cost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -57,6 +58,7 @@ class LedgerBlock(models.Model):
             "owner": self.document.owner,
             "title": self.document.title,
             "file_name": self.document.file_name,
+            "cost": float(self.document.cost),
             "uploaded_by": self.document.uploaded_by.username,
             "previous_hash": self.previous_hash,
             "timestamp": self.timestamp.isoformat(),

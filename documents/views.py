@@ -101,6 +101,7 @@ def register_document_view(request):
         document = DocumentRecord.objects.create(
             owner=form.cleaned_data["owner"],
             title=form.cleaned_data["title"],
+            cost=form.cleaned_data.get("cost") or 0.00,
             file_name=uploaded_file.name,
             document_file=uploaded_file,
             document_content=document_content,

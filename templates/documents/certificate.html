@@ -14,6 +14,7 @@
       <p><strong>Status:</strong> {% if ledger_valid %}Original document record found{% else %}Verification problem detected{% endif %}</p>
       <p><strong>Document title:</strong> {{ document.title }}</p>
       <p><strong>Owner:</strong> {{ document.owner }}</p>
+      <p><strong>Cost:</strong> ${{ document.cost }}</p>
       <p><strong>File name:</strong> {{ document.file_name }}</p>
       <p><strong>Uploaded by:</strong> {{ document.uploaded_by.username }}</p>
       <p><strong>Registered on:</strong> {{ document.created_at|date:"M d, Y H:i" }}</p>
