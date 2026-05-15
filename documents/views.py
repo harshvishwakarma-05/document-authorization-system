@@ -286,3 +286,22 @@ def ledger_is_valid():
             return False
         previous_hash = block.block_hash
     return True
+
+@login_required
+def update_document(request, id):
+    document = get_object_or_404(DocumentRecord, id=id)
+
+    if request.method == "POST":
+        document.title = request.POST.get("title")
+        document.owner = request.POST.get("owner")
+
+        if request.FILES.get("document_file"):
+            document.document_file = request.FILES.get("document_file")
+
+        document.save()
+
+        return redirect("certificate_view", token=document.verification_token)
+
+    return render(request, "documents/edit_document.html", {
+        "document": document
+    })
