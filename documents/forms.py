@@ -82,7 +82,7 @@ class DocumentVerifyForm(forms.Form):
 
 class DocumentEditForm(forms.ModelForm):
 
-    document_file = forms.FileField(required=False)
+    document_file = forms.FileField(required=False, widget=forms.FileInput)
 
     class Meta:
         model = DocumentRecord
