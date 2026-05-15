@@ -90,7 +90,7 @@ class DocumentEditForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields["owner"].widget.attrs.update({"placeholder": "Example: College Office"})
         self.fields["title"].widget.attrs.update({"placeholder": "Example: Degree Certificate"})
-
+        fields = ["owner", "title", "document_file"]
 
 def validate_safe_document(uploaded_file):
     extension = Path(uploaded_file.name).suffix.lower()
