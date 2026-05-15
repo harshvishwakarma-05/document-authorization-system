@@ -20,10 +20,16 @@ def role_required(*allowed_roles):
                 return view_func(request, *args, **kwargs)
 
             try:
-                if hasattr(request.user, 'profile') and request.user.profile.role in allowed_roles:
-                    return view_func(request, *args, **kwargs)
+                if hasattr(request.user, 'profile'):
+                    if request.user.profile.role in allowed_roles:
+                        return view_func(request, *args, **kwargs)
+                else:
+                    # Default role is 'uploader'
+                    if 'uploader' in allowed_roles:
+                        return view_func(request, *args, **kwargs)
             except (OperationalError, ProgrammingError):
-                pass
+                if 'uploader' in allowed_roles:
+                    return view_func(request, *args, **kwargs)
                 
             raise PermissionDenied("You do not have the necessary permissions to access this page.")
         return _wrapped_view
