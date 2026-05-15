@@ -24,19 +24,18 @@
       {{ form.title }}
       {{ form.title.errors }}
     </label>
-
-<label>Replace File</label>
-    <input type="file" name="document_file">
 <div class="button-row">
 
-    <button type="submit" class="button-link">
-        Update Document
-    </button>
+<button type="submit" class="button-link">
+    Save Changes
+</button>
 
-    <a class="button-link secondary"
-       href="{% url 'dashboard' %}">
-       Cancel
-    </a>
+<a class="button-link secondary"
+   href="{% url 'dashboard' %}">
+   Cancel
+</a>
+
+</div>
 
 </div>
   </form>
