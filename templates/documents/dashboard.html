@@ -4,10 +4,12 @@
 
 {% block content %}
 <section class="action-strip">
+  {% if request.user.profile.role != 'reviewer' %}
   <a class="primary-action" href="{% url 'register_document' %}">
     <span>Save Original</span>
     <small>Add a real document and create a QR certificate.</small>
   </a>
+  {% endif %}
   <a class="primary-action secondary-action" href="{% url 'verify_document' %}">
     <span>Check File</span>
     <small>Upload a file to detect original or fake.</small>
@@ -86,9 +88,11 @@
           {% if block.document.has_stored_document %}
             <a class="certificate-link" href="{% url 'open_document' block.document.id %}" target="_blank" rel="noopener">Open Document</a>
           {% endif %}
-          {% if user.is_superuser or block.document.uploaded_by == user %}
-            <a class="certificate-link" href="{% url 'edit_document' block.document.id %}">Edit</a>
-            <a class="certificate-link danger-link" href="{% url 'delete_document' block.document.id %}">Delete</a>
+          {% if request.user.profile.role != 'reviewer' %}
+            {% if user.is_superuser or block.document.uploaded_by == user %}
+              <a class="certificate-link" href="{% url 'edit_document' block.document.id %}">Edit</a>
+              <a class="certificate-link danger-link" href="{% url 'delete_document' block.document.id %}">Delete</a>
+            {% endif %}
           {% endif %}
         </div>
       </article>

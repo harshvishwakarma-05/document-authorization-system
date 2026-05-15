@@ -14,6 +14,7 @@ from .forms import DocumentEditForm, DocumentUploadForm, DocumentVerifyForm, For
 from .models import DocumentRecord, LedgerBlock
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from .decorators import role_required
 
 def signup_view(request):
     if request.user.is_authenticated:
@@ -53,7 +54,8 @@ def forgot_password_view(request):
 
 @login_required
 def dashboard_view(request):
-    if request.user.is_superuser:
+    is_reviewer = hasattr(request.user, 'profile') and request.user.profile.role == 'reviewer'
+    if request.user.is_superuser or is_reviewer:
         documents = DocumentRecord.objects.all()
         ledger_blocks = LedgerBlock.objects.select_related("document", "document__uploaded_by")
     else:
@@ -71,6 +73,7 @@ def dashboard_view(request):
 
 
 @login_required
+@role_required('uploader')
 @transaction.atomic
 def register_document_view(request):
     form = DocumentUploadForm(request.POST or None, request.FILES or None)
@@ -150,6 +153,7 @@ def verify_document_view(request):
 
 
 @login_required
+@role_required('uploader')
 @transaction.atomic
 def edit_document_view(request, pk):
 
@@ -217,6 +221,7 @@ def edit_document_view(request, pk):
 
 
 @login_required
+@role_required('uploader')
 @transaction.atomic
 def delete_document_view(request, pk):
     document = get_user_document(request, pk)

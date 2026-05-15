@@ -4,6 +4,8 @@ import uuid
 
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class DocumentRecord(models.Model):
@@ -61,3 +63,27 @@ class LedgerBlock(models.Model):
 
     def is_valid(self):
         return self.block_hash == self.make_hash(self.payload())
+
+
+class UserProfile(models.Model):
+    ROLE_CHOICES = (
+        ('reviewer', 'Reviewer'),
+        ('uploader', 'Uploader'),
+    )
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='uploader')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.get_role_display()}"
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def save_user_profile(sender, instance, **kwargs):
+    if hasattr(instance, 'profile'):
+        instance.profile.save()

@@ -1,6 +1,13 @@
 from django.contrib import admin
 
-from .models import DocumentRecord, LedgerBlock
+from .models import DocumentRecord, LedgerBlock, UserProfile
+
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "role")
+    list_filter = ("role",)
+
 
 
 @admin.register(DocumentRecord)
