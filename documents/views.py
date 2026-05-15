@@ -14,6 +14,7 @@ from .forms import DocumentEditForm, DocumentUploadForm, DocumentVerifyForm, For
 from .models import DocumentRecord, LedgerBlock
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.db.utils import OperationalError, ProgrammingError
 from .decorators import role_required
 
 def signup_view(request):
@@ -54,7 +55,12 @@ def forgot_password_view(request):
 
 @login_required
 def dashboard_view(request):
-    is_reviewer = hasattr(request.user, 'profile') and request.user.profile.role == 'reviewer'
+    is_reviewer = False
+    try:
+        is_reviewer = hasattr(request.user, 'profile') and request.user.profile.role == 'reviewer'
+    except (OperationalError, ProgrammingError):
+        pass
+
     if request.user.is_superuser or is_reviewer:
         documents = DocumentRecord.objects.all()
         ledger_blocks = LedgerBlock.objects.select_related("document", "document__uploaded_by")

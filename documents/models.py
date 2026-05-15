@@ -5,6 +5,7 @@ import uuid
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
+from django.db.utils import OperationalError, ProgrammingError
 from django.dispatch import receiver
 
 
@@ -80,10 +81,16 @@ class UserProfile(models.Model):
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        UserProfile.objects.create(user=instance)
+        try:
+            UserProfile.objects.create(user=instance)
+        except (OperationalError, ProgrammingError):
+            pass
 
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def save_user_profile(sender, instance, **kwargs):
-    if hasattr(instance, 'profile'):
-        instance.profile.save()
+    try:
+        if hasattr(instance, 'profile'):
+            instance.profile.save()
+    except (OperationalError, ProgrammingError):
+        pass

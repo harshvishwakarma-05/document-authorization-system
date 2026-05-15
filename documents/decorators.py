@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
+from django.db.utils import OperationalError, ProgrammingError
 from functools import wraps
 
 def role_required(*allowed_roles):
@@ -18,8 +19,11 @@ def role_required(*allowed_roles):
             if request.user.is_superuser:
                 return view_func(request, *args, **kwargs)
 
-            if hasattr(request.user, 'profile') and request.user.profile.role in allowed_roles:
-                return view_func(request, *args, **kwargs)
+            try:
+                if hasattr(request.user, 'profile') and request.user.profile.role in allowed_roles:
+                    return view_func(request, *args, **kwargs)
+            except (OperationalError, ProgrammingError):
+                pass
                 
             raise PermissionDenied("You do not have the necessary permissions to access this page.")
         return _wrapped_view
