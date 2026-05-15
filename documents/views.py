@@ -160,29 +160,55 @@ def edit_document_view(request, pk):
         request.FILES or None,
         instance=document
     )
-if request.FILES.get("document_file"):
 
-    uploaded_file = request.FILES.get("document_file")
+    if request.method == "POST" and form.is_valid():
 
-    updated_document.document_file = uploaded_file
-    updated_document.file_name = uploaded_file.name
+        updated_document = form.save(commit=False)
 
-    document_content = uploaded_file.read()
+        if request.FILES.get("document_file"):
 
-    updated_document.document_content = document_content
+            uploaded_file = request.FILES.get("document_file")
 
-    uploaded_file.seek(0)
+            updated_document.document_file = uploaded_file
+            updated_document.file_name = uploaded_file.name
 
-    import hashlib
+            document_content = uploaded_file.read()
 
-    hasher = hashlib.sha256()
+            updated_document.document_content = document_content
 
-    for chunk in uploaded_file.chunks():
-        hasher.update(chunk)
+            uploaded_file.seek(0)
 
-    uploaded_file.seek(0)
+            import hashlib
 
-    updated_document.document_hash = hasher.hexdigest()
+            hasher = hashlib.sha256()
+
+            for chunk in uploaded_file.chunks():
+                hasher.update(chunk)
+
+            uploaded_file.seek(0)
+
+            updated_document.document_hash = hasher.hexdigest()
+
+        updated_document.save()
+
+        rebuild_ledger()
+
+        messages.success(
+            request,
+            "Document updated successfully."
+        )
+
+        return redirect("dashboard")
+
+    return render(
+        request,
+        "documents/edit_document.html",
+        {
+            "form": form,
+            "document": document,
+        }
+    )
+
 
 @login_required
 @transaction.atomic
