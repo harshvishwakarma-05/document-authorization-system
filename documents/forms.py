@@ -80,18 +80,22 @@ class DocumentVerifyForm(forms.Form):
         validate_safe_document(uploaded_file)
         return uploaded_file
 
-
 class DocumentEditForm(forms.ModelForm):
+
     class Meta:
         model = DocumentRecord
-        fields = ["owner", "title"]
+        fields = ["owner", "title", "document_file"]
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["owner"].widget.attrs.update({"placeholder": "Example: College Office"})
-        self.fields["title"].widget.attrs.update({"placeholder": "Example: Degree Certificate"})
-        fields = ["owner", "title", "document_file"]
 
+        self.fields["owner"].widget.attrs.update({
+            "placeholder": "Example: College Office"
+        })
+
+        self.fields["title"].widget.attrs.update({
+            "placeholder": "Example: Degree Certificate"
+        })
 def validate_safe_document(uploaded_file):
     extension = Path(uploaded_file.name).suffix.lower()
     if extension not in ALLOWED_EXTENSIONS:
